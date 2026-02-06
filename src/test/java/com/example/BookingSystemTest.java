@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class BookingSystemTest {
@@ -51,7 +52,7 @@ class BookingSystemTest {
 
         assertThrows(IllegalArgumentException.class, () -> bookingSystem.bookRoom(roomId, startTime, endTime));
     }
-    static Stream<Arguments> shouldThrowExceptionIfInvalidBookingInput() {
+     static Stream<Arguments> shouldThrowExceptionIfInvalidBookingInput() {
         LocalDateTime now = LocalDateTime.now();
 
         return Stream.of(
@@ -59,5 +60,17 @@ class BookingSystemTest {
                 Arguments.of("No input in end time" , "Standard" , now , null ),
                 Arguments.of("RoomId is null" , null , now , now.plusHours(24))
         );
+    }
+
+    @Test
+    void shouldThrowExceptionIfStartTimeIsBeforeCurrentTime() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startTime = now.minusMinutes(10);
+        LocalDateTime endTime = now.plusHours(24);
+
+        when(timeProvider.getCurrentTime()).thenReturn(now);
+
+        assertThrows(IllegalArgumentException.class, () -> bookingSystem.bookRoom("RoomId", startTime, endTime));
+
     }
 }
