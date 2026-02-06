@@ -73,4 +73,14 @@ class BookingSystemTest {
         assertThrows(IllegalArgumentException.class, () -> bookingSystem.bookRoom("RoomId", startTime, endTime));
 
     }
+
+    @Test
+    void shouldThrowExceptionIfEndTimeIsBeforeStartTime() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startTime = now;
+        LocalDateTime endTime = now.minusMinutes(10);
+
+        when(timeProvider.getCurrentTime()).thenReturn(now);
+        assertThrows(IllegalArgumentException.class, () -> bookingSystem.bookRoom("RoomId", startTime, endTime));
+    }
 }
