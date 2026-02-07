@@ -12,10 +12,16 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.internal.configuration.GlobalConfiguration.validate;
 
 @ExtendWith(MockitoExtension.class)
 class BookingSystemTest {
@@ -25,6 +31,9 @@ class BookingSystemTest {
 
     @Mock
     RoomRepository roomRepository;
+
+    @Mock
+    Room room;
 
     @Mock
     NotificationService notificationService;
@@ -54,7 +63,6 @@ class BookingSystemTest {
     }
      static Stream<Arguments> shouldThrowExceptionIfInvalidBookingInput() {
         LocalDateTime now = LocalDateTime.now();
-
         return Stream.of(
                 Arguments.of("No input in start time", "Standard" , null , now.plusHours(24)),
                 Arguments.of("No input in end time" , "Standard" , now , null ),
@@ -83,4 +91,23 @@ class BookingSystemTest {
         when(timeProvider.getCurrentTime()).thenReturn(now);
         assertThrows(IllegalArgumentException.class, () -> bookingSystem.bookRoom("RoomId", startTime, endTime));
     }
+
+    @Test
+    void shouldAddNewBooking() throws NotificationException {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startTime = now;
+        LocalDateTime endTime = now.plusHours(24);
+
+        when(timeProvider.getCurrentTime()).thenReturn(now);
+        when(roomRepository.findById("Standard")).thenReturn(Optional.of(room));
+        when(room.isAvailable(startTime, endTime)).thenReturn(true);
+
+        boolean result = bookingSystem.bookRoom("Standard", startTime, endTime);
+        assertThat(result).isTrue();
+
+        verify(room).addBooking(any());
+        verify(roomRepository).save(room);
+        verify(notificationService).sendBookingConfirmation(any());
+    }
+
 }
