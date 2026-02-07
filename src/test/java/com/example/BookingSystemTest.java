@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Stack;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -108,6 +109,24 @@ class BookingSystemTest {
         verify(room).addBooking(any());
         verify(roomRepository).save(room);
         verify(notificationService).sendBookingConfirmation(any());
+    }
+
+    @ParameterizedTest (name = "{0}")
+    @MethodSource ("invalidAvailableRoomArguments")
+    void shouldThrowExceptionIfInvalidAvailableRoom (
+            String comment,
+            LocalDateTime startTime,
+            LocalDateTime endTime
+    ){
+        assertThrows(IllegalArgumentException.class, () -> bookingSystem.getAvailableRooms(startTime, endTime));
+    }
+    static Stream<Arguments> invalidAvailableRoomArguments() {
+        LocalDateTime now = LocalDateTime.now();
+        return Stream.of(
+                Arguments.of("No input in start time" , null , now.plusHours(24)),
+                Arguments.of("No input in end time" , now , null),
+                Arguments.of("End time is before start time" , now.plusHours(24), now)
+        );
     }
 
 }
