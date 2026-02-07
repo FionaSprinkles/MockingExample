@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.Stack;
 import java.util.UUID;
@@ -20,8 +21,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.internal.configuration.GlobalConfiguration.validate;
 
 @ExtendWith(MockitoExtension.class)
@@ -127,6 +127,55 @@ class BookingSystemTest {
                 Arguments.of("No input in end time" , now , null),
                 Arguments.of("End time is before start time" , now.plusHours(24), now)
         );
+    }
+
+    @Test
+void cancelBookingArgument(){
+        assertThrows(IllegalArgumentException.class, () -> bookingSystem.cancelBooking(null));
+    }
+
+    @Test
+    void cancelBooking(){
+
+        when(roomRepository.findAll()).thenReturn(List.of(room));
+        when(room.hasBooking(any())).thenReturn(false);
+
+        boolean result = bookingSystem.cancelBooking("bookingId");
+
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void shouldThrowExceptionWhenBookingIsAlreadyStarted(){
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startTime = now.minusHours(1);
+
+        Booking booking = mock(Booking.class);
+        when(roomRepository.findAll()).thenReturn(List.of(room));
+        when(room.hasBooking("bookingId")).thenReturn(true);
+        when(room.getBooking("bookingId")).thenReturn(booking);
+
+        when(booking.getStartTime()).thenReturn(startTime);
+        when(timeProvider.getCurrentTime()).thenReturn(now);
+
+        assertThrows(IllegalStateException.class, () -> bookingSystem.cancelBooking("bookingId"));
+    }
+
+    @Test
+    void shouldRemoveBooking(){
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startTime = now.plusHours(24);
+
+        Booking booking = mock(Booking.class);
+        when(roomRepository.findAll()).thenReturn(List.of(room));
+        when(room.hasBooking("bookingId")).thenReturn(true);
+        when(room.getBooking("bookingId")).thenReturn(booking);
+
+        when(booking.getStartTime()).thenReturn(startTime);
+        when(timeProvider.getCurrentTime()).thenReturn(now);
+
+        assertThat(bookingSystem.cancelBooking("bookingId")).isTrue();
     }
 
 }
