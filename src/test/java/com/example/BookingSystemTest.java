@@ -130,7 +130,25 @@ class BookingSystemTest {
     }
 
     @Test
-void cancelBookingArgument(){
+    void shouldReturnListOfAvailableRooms() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startTime = now.plusHours(24);
+        LocalDateTime endTime = now.plusHours(72);
+
+        Room room1 = mock(Room.class);
+        Room room2 = mock(Room.class);
+
+        when(roomRepository.findAll()).thenReturn(List.of(room1, room2));
+        when(room1.isAvailable(startTime, endTime)).thenReturn(true);
+        when(room2.isAvailable(startTime, endTime)).thenReturn(false);
+
+        List<Room> result = bookingSystem.getAvailableRooms(startTime, endTime);
+
+        assertThat(result).containsExactly(room1);
+    }
+
+    @Test
+    void cancelBookingArgument(){
         assertThrows(IllegalArgumentException.class, () -> bookingSystem.cancelBooking(null));
     }
 
