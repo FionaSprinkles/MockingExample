@@ -2,6 +2,7 @@ package com.example;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -51,8 +52,20 @@ class BookingSystemTest {
     void tearDown() {
     }
 
+
+    /**
+     * Verifies that bookRoom throws IllegalArgumentException
+     * when required booking input is missing.
+     *
+     * Tested scenarios:
+     * - startTime is null
+     * - endTime is null
+     * - roomId is null
+     */
+
     @ParameterizedTest (name = "{0}")
     @MethodSource ("shouldThrowExceptionIfInvalidBookingInput")
+    @DisplayName("Verify that bookRoom throws IllegalArgumentException")
     void shouldThrowException (
         String comment,
         String roomId,
@@ -71,7 +84,16 @@ class BookingSystemTest {
         );
     }
 
+    /**
+     * Verifies that bookRoom throws IllegalArgumentException
+     * when you try to book a room before current time
+     *
+     * Tested scenarios:
+     * - start time is before current time
+     */
+
     @Test
+    @DisplayName("Cannot book a room if start time is before current time")
     void shouldThrowExceptionIfStartTimeIsBeforeCurrentTime() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startTime = now.minusMinutes(10);
@@ -83,7 +105,15 @@ class BookingSystemTest {
 
     }
 
+    /**
+     * Verifies that bookRoom throws IllegalArgumentException
+     * when the bookings ending time is before its starting time.
+     *
+     * Tested scenarios:
+     * - end time is before start time
+     */
     @Test
+    @DisplayName("Cannot book room if end time is before start time")
     void shouldThrowExceptionIfEndTimeIsBeforeStartTime() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startTime = now;
@@ -93,7 +123,19 @@ class BookingSystemTest {
         assertThrows(IllegalArgumentException.class, () -> bookingSystem.bookRoom("RoomId", startTime, endTime));
     }
 
+    /**
+     * Verifies that bookRoom adds a new booking
+     * when booking a room.
+     *
+     * Verifies that you get a notification when booking is complete.
+     *
+     * Tested scenarios:
+     * - room is booked and saved in roomRepository.
+     * - notificationService sends notification when room is booked.
+     */
+
     @Test
+    @DisplayName("Should book a room and send a notification to confirm")
     void shouldAddNewBooking() throws NotificationException {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startTime = now;
@@ -111,8 +153,18 @@ class BookingSystemTest {
         verify(notificationService).sendBookingConfirmation(any());
     }
 
+    /**
+     * Verifies that getAvailableRooms throws IllegalArgumentException
+     * when required input is missing.
+     *
+     * Tested scenarios:
+     * - startTime is null
+     * - endTime is null
+     * - endTime is before startTime
+     */
     @ParameterizedTest (name = "{0}")
     @MethodSource ("invalidAvailableRoomArguments")
+    @DisplayName("Verify that getAvailableRooms throw IllegalArgumentException")
     void shouldThrowExceptionIfInvalidAvailableRoom (
             String comment,
             LocalDateTime startTime,
@@ -128,8 +180,16 @@ class BookingSystemTest {
                 Arguments.of("End time is before start time" , now.plusHours(24), now)
         );
     }
+    /**
+     * Verifies that getAvailableRooms returns a list
+     * of available rooms.
+     *
+     * Tested scenarios:
+     * - find all available rooms whithin a specific timeslot and return them
+     */
 
     @Test
+    @DisplayName("Should return a list of available rooms within specific time slot")
     void shouldReturnListOfAvailableRooms() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startTime = now.plusHours(24);
@@ -146,13 +206,30 @@ class BookingSystemTest {
 
         assertThat(result).containsExactly(room1);
     }
+    /**
+     * Verifies that cancelBooking throws IllegalArgumentException
+     * when required cancelling input is missing.
+     *
+     * Tested scenarios:
+     * - bookingId is null
+     */
 
     @Test
+    @DisplayName("Should throw IllegalArgumentException if bookingId is null when trying to cancel booking")
     void cancelBookingArgument(){
         assertThrows(IllegalArgumentException.class, () -> bookingSystem.cancelBooking(null));
     }
 
+    /**
+     * Verifies that cancelBooking returns false
+     * when the booking does not exist.
+     *
+     * Tested scenarios:
+     * - bookingId is not found in any room
+     */
+
     @Test
+    @DisplayName("Should return false when booking is not found")
     void cancelBooking(){
 
         when(roomRepository.findAll()).thenReturn(List.of(room));
@@ -162,8 +239,16 @@ class BookingSystemTest {
 
         assertThat(result).isFalse();
     }
+    /**
+     * Verifies that cancelBooking throws IllegalStateExpression
+     * when you try to cancel a booking that already started.
+     *
+     * Tested scenarios:
+     * - cancelBooking when startTime is before current time
+     */
 
     @Test
+    @DisplayName("Should throw IllegalStateException when you try to cancel a booking after start time")
     void shouldThrowExceptionWhenBookingIsAlreadyStarted(){
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startTime = now.minusHours(1);
@@ -178,8 +263,15 @@ class BookingSystemTest {
 
         assertThrows(IllegalStateException.class, () -> bookingSystem.cancelBooking("bookingId"));
     }
+    /**
+     * Verifies that cancelBooking removes a booking
+     *
+     * Tested scenarios:
+     * - cancelBooking removes booking if startTime is after curent time
+     */
 
     @Test
+    @DisplayName("Should cancel a booking if booking hasnt started yet")
     void shouldRemoveBooking(){
 
         LocalDateTime now = LocalDateTime.now();
