@@ -14,5 +14,8 @@ public class ShoppingCart {
     public boolean containsItem(String itemName){
         return items.contains(itemName);
     }
+    public void deleteItem(String itemName){
+        items.remove(itemName);
+    }
 
 }
