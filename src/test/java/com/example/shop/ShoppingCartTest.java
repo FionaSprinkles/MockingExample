@@ -87,7 +87,7 @@ class ShoppingCartTest {
         return Stream.of(
                 Arguments.of(List.of(packageStandard), 20000.00),
                 Arguments.of(List.of(sunscreen, boatTicket),859.00),
-                Arguments.of(List.of(packageStandard, sunscreen, boatTicket),2859.00)
+                Arguments.of(List.of(packageStandard, sunscreen, boatTicket),20859.00)
         );
     }
 

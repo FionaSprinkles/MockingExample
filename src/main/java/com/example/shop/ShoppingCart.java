@@ -8,6 +8,7 @@ import java.util.Set;
 public class ShoppingCart {
 
     private List<ShopItems> items = new ArrayList<>();
+    private double discountPercentage = 0.0;
 
 
     public void addItem (ShopItems item){
@@ -20,11 +21,16 @@ public class ShoppingCart {
         items.remove(item);
     }
     public double totalShoppingCartCost() {
-        double total = 0;
-        return total;
+
+        double total =items.stream()
+                .mapToDouble(ShopItems::getItemPrice)
+                .sum();
+
+        return total * (1 - discountPercentage / 100);
     }
-    public double addDiscount(Double discountProcentage) {
-        return discountProcentage;
+    public void addDiscount(Double discountPercentage) {
+        this.discountPercentage = discountPercentage;
+
     }
 
 }
