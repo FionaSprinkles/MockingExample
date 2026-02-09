@@ -89,4 +89,31 @@ class PaymentProcessorTest {
         assertThat(result).isFalse();
 
     }
+
+    /**
+     * Verifies that PaymentProcessor correctly handles a zero amount payment.
+     *
+     * Tested scenarios:
+     * - External payment service returns successful response for zero amount
+     * - Payment is persisted in database
+     * - Confirmation email is sent to user
+     * - processPayment returns true
+     */
+    @Test
+    @DisplayName("Should handle when payment is zero")
+    void shouldHandlePaymentZero() {
+        PaymentApiResponse apiResponse = new PaymentApiResponse(true);
+
+        when(paymentApi.charge(anyString(), anyDouble())).thenReturn(apiResponse);
+
+        boolean result = paymentProcessor.processPayment(0.00);
+
+        verify(databaseConnection)
+        .savePayment(0.00, "SUCCESS");
+
+        verify(emailService).sendPaymentConfirmation("user@example.com", 0.00);
+
+        assertThat(result).isTrue();
+
+    }
 }
