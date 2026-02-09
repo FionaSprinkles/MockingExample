@@ -30,7 +30,6 @@ class ShoppingCartTest {
 
     /**
  * Implementationen ska stödja:
- *  Beräkna totalpris
  *  Applicera rabatter
  *  Hantera kvantitetsuppdateringar
  */
@@ -92,6 +91,21 @@ class ShoppingCartTest {
         );
     }
 
+    /**
+     * Verifies that addDiscount applies a discount to the cart.
+     *
+     * Tested scenarios:
+     * - Shopping cart is discounted
+     */
+    @Test
+    @DisplayName("Should apply discount to shopping cart")
+    void shouldApplyDiscount() {
+        cart.addItem(packageStandard);
+
+        assertThat(cart.totalShoppingCartCost()).isEqualTo(20000.00);
+        cart.addDiscount(20.00);
+        assertThat(cart.totalShoppingCartCost()).isEqualTo(16000.00);
+    }
 
 
 }

@@ -23,5 +23,8 @@ public class ShoppingCart {
         double total = 0;
         return total;
     }
+    public double addDiscount(Double discountProcentage) {
+        return discountProcentage;
+    }
 
 }
