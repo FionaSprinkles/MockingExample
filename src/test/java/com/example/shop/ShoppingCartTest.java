@@ -1,9 +1,14 @@
 package com.example.shop;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.List;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -12,6 +17,11 @@ import static org.mockito.Mockito.when;
 class ShoppingCartTest {
 
     private ShoppingCart cart;
+    private ShopItems item;
+
+    private static final ShopItems packageStandard = new ShopItems("packageStandard", 20000.00);
+    private static final ShopItems sunscreen = new ShopItems("Sunscreen", 59.00);
+    private static final ShopItems boatTicket = new ShopItems("Boat tickets", 800.00);
 
     @BeforeEach
     void setUp() {
@@ -20,8 +30,6 @@ class ShoppingCartTest {
 
     /**
  * Implementationen ska stödja:
- *  Lägga till varor
- *  Ta bort varor
  *  Beräkna totalpris
  *  Applicera rabatter
  *  Hantera kvantitetsuppdateringar
@@ -36,10 +44,7 @@ class ShoppingCartTest {
     @Test
     @DisplayName("Should add item to cart")
     void shouldAddItemToCart() {
-        String packageStandard = "holidayPackageStandard";
-
         cart.addItem(packageStandard);
-
         assertThat(cart.containsItem(packageStandard)).isTrue();
     }
 
@@ -52,8 +57,6 @@ class ShoppingCartTest {
     @Test
     @DisplayName("Item should be deleted from cart")
     void shouldDeleteItemFromCart() {
-        String packageStandard = "holidayPackageStandard";
-
         cart.addItem(packageStandard);
 
         assertThat(cart.containsItem(packageStandard)).isTrue();
@@ -63,5 +66,32 @@ class ShoppingCartTest {
         assertThat(cart.containsItem(packageStandard)).isFalse();
 
     }
+
+    /**
+     * Verifies that totalCost adds the cost of all items in ShoppingCart.
+     *
+     * Tested scenarios:
+     * - items put in shoppingcart adds to correct total cost
+     */
+
+    @ParameterizedTest (name = "{0}")
+    @MethodSource ("shouldAddTotalCost")
+    @DisplayName("Should add the cost of all items in shopping cart")
+    void shouldAddToTotalCostOfAllItems(
+            List<ShopItems> items,
+            double expectedTotal
+    ){
+        items.forEach(cart::addItem);
+        assertThat(cart.totalShoppingCartCost()).isEqualTo(expectedTotal);
+    }
+    static Stream<Arguments> shouldAddTotalCost() {
+        return Stream.of(
+                Arguments.of(List.of(packageStandard), 20000.00),
+                Arguments.of(List.of(sunscreen, boatTicket),859.00),
+                Arguments.of(List.of(packageStandard, sunscreen, boatTicket),2859.00)
+        );
+    }
+
+
 
 }
