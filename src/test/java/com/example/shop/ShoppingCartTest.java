@@ -129,6 +129,21 @@ class ShoppingCartTest {
 
         assertThat(cart.totalShoppingCartCost()).isEqualTo(0);
     }
+    /**
+     * Verifies that totalShoppingCartCost doesn't add a discount
+     * if discount is zero.
+     *
+     * Tested scenarios:
+     * - Discount is 0%
+     */
+    @Test
+    @DisplayName("Should not change when discount is zero")
+    void shouldNotChangeDiscountWhenDiscountIsZero() {
+        cart.addItem(packageStandard);
+        cart.addDiscount(0.00);
+        assertThat(cart.totalShoppingCartCost()).isEqualTo(20000.00);
+
+    }
 
 
 
