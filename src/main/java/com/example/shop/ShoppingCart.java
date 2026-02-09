@@ -1,21 +1,27 @@
 package com.example.shop;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ShoppingCart {
 
-    private Set<String> items = new HashSet<String>();
+    private List<ShopItems> items = new ArrayList<>();
 
 
-    public void addItem (String itemName){
-        items.add(itemName);
+    public void addItem (ShopItems item){
+        items.add(item);
     }
-    public boolean containsItem(String itemName){
-        return items.contains(itemName);
+    public boolean containsItem(ShopItems item){
+        return items.contains(item);
     }
-    public void deleteItem(String itemName){
-        items.remove(itemName);
+    public void deleteItem(ShopItems item){
+        items.remove(item);
+    }
+    public double totalShoppingCartCost() {
+        double total = 0;
+        return total;
     }
 
 }

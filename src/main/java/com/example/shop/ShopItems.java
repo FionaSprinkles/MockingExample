@@ -4,9 +4,9 @@ public class ShopItems {
     private String itemName;
     private double itemPrice;
 
-    public ShopItems(double itemPrice, String itemName) {
-        this.itemPrice = itemPrice;
+    public ShopItems(String itemName, double itemPrice) {
         this.itemName = itemName;
+        this.itemPrice = itemPrice;
     }
 
     public String getItemName() {
