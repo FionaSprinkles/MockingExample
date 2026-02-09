@@ -28,10 +28,6 @@ class ShoppingCartTest {
         cart = new ShoppingCart();
     }
 
-    /**
- * Implementationen ska stödja:
- *  Hantera kvantitetsuppdateringar
- */
 
     /**
      * Verifies that addItem puts item holidayPackageStandard in cart.
