@@ -1,12 +1,19 @@
 package com.example.payment;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 class PaymentProcessorTest {
 
@@ -25,8 +32,34 @@ class PaymentProcessorTest {
 
 
 
+
+    /**
+     * Verifies that paymentProcessor processes payment successfull.
+     *
+     * Tested scenarios:
+     * - External payment service returns successful response
+     * - Payment is persisted in database
+     * - Confirmation email is sent to user
+     * - processPayment returns true
+     */
     @Test
-    void processPayment() {
+    @DisplayName("Should process payment successfully")
+    void shouldProcessPaymentSuccessfully() {
+        PaymentApiResponse apiResponse = new PaymentApiResponse(true);
+
+        when(paymentApi.charge(anyString(), anyDouble())).thenReturn(apiResponse);
+
+
+        boolean result = paymentProcessor.processPayment(2000.00);
+
+        verify(databaseConnection)
+                .savePayment(2000.00, "SUCCESS");
+
+        verify(emailService).sendPaymentConfirmation(anyString(), anyDouble());
+
+        assertThat(result).isTrue();
+
+
 
     }
 }
