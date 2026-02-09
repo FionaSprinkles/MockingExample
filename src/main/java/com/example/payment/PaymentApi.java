@@ -1,6 +1,6 @@
 package com.example.payment;
 
 public interface PaymentApi {
-    void charge (String key, double amount);
+    PaymentApiResponse charge(String key, double amount);
 
 }

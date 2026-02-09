@@ -2,5 +2,6 @@ package com.example.payment;
 
 public interface DatabaseConnection {
 
-    void getInstance();
+    void savePayment(double amount, String status);
+
 }
