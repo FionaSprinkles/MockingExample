@@ -117,6 +117,20 @@ class ShoppingCartTest {
         assertThat(cart.getQuantity(packageStandard)).isEqualTo(2);
     }
 
+    /**
+     * Verifies that totalShoppingCartCost can handle a cart that is empty.
+     *
+     * Tested scenarios:
+     * - Nothing in cart
+     */
+    @Test
+    @DisplayName("Should return 0 when cart is empty")
+    void shouldReturnZeroForEmptyCart() {
+
+        assertThat(cart.totalShoppingCartCost()).isEqualTo(0);
+    }
+
+
 
 
 }
