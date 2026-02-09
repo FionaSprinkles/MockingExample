@@ -1,6 +1,12 @@
 package com.example.payment;
 
 public class PaymentProcessor {
+
+    private final PaymentApiResponse paymentApiResponse;
+    private final DatabaseConnection databaseConnection;
+    private EmailService emailService;
+
+
     private static final String API_KEY = "sk_test_123456";
 
     public boolean processPayment(double amount) {
