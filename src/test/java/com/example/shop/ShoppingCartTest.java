@@ -30,7 +30,6 @@ class ShoppingCartTest {
 
     /**
  * Implementationen ska stödja:
- *  Applicera rabatter
  *  Hantera kvantitetsuppdateringar
  */
 
@@ -106,6 +105,22 @@ class ShoppingCartTest {
         cart.addDiscount(20.00);
         assertThat(cart.totalShoppingCartCost()).isEqualTo(16000.00);
     }
+    /**
+     * Verifies that getQuantity counts items correctly
+     *
+     * Tested scenarios:
+     * - 2 of the same items in getQuantity
+     */
+    @Test
+    @DisplayName("Should update quantity when adding same item multiple times")
+    void shouldIncreaseQuantityWhenAddingSameItem() {
+
+        cart.addItem(packageStandard);
+        cart.addItem(packageStandard);
+
+        assertThat(cart.getQuantity(packageStandard)).isEqualTo(2);
+    }
+
 
 
 }

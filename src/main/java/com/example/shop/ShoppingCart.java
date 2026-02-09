@@ -32,5 +32,8 @@ public class ShoppingCart {
         this.discountPercentage = discountPercentage;
 
     }
+    public int getQuantity(ShopItems item){
+        return 0;
+    }
 
 }
