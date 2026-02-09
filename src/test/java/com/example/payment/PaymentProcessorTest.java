@@ -11,8 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PaymentProcessorTest {
@@ -60,6 +59,34 @@ class PaymentProcessorTest {
         assertThat(result).isTrue();
 
 
+
+    }
+
+    /**
+     * Verifies that PaymentProcessor handles failed payments correctly.
+     *
+     * Tested scenarios:
+     * - External payment service returns failure response
+     * - Payment is NOT persisted in database
+     * - Confirmation email is NOT sent
+     * - processPayment returns false
+     */
+
+    @Test
+    @DisplayName("Should not save payment or send email when payment fails")
+    void shouldProcessPaymentFailure() {
+        PaymentApiResponse apiResponse = new PaymentApiResponse(false);
+
+        when(paymentApi.charge(anyString(), anyDouble())).thenReturn(apiResponse);
+
+        boolean result = paymentProcessor.processPayment(2000.00);
+
+        verify(databaseConnection, never())
+        .savePayment(anyDouble(), anyString());
+
+        verify(emailService, never()).sendPaymentConfirmation(anyString(), anyDouble());
+
+        assertThat(result).isFalse();
 
     }
 }
